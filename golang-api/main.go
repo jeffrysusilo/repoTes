@@ -4,9 +4,9 @@ import (
     "net/http"
     "log"
 
-    "github.com/yourusername/go-ticket/config"
-    "github.com/yourusername/go-ticket/controllers"
-    "github.com/yourusername/go-ticket/middleware"
+    "github.com/jeffrysusilo/repotes/golang-api/config"
+    "github.com/jeffrysusilo/repotes/golang-api/controllers"
+    "github.com/jeffrysusilo/repotes/golang-api/middleware"
 )
 
 func main() {

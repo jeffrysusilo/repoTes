@@ -4,7 +4,7 @@ import (
     "encoding/json"
     "net/http"
 
-    "github.com/yourusername/go-ticket/config"
+    "github.com/jeffrysusilo/repotes/golang-api/config"
     "github.com/google/uuid"
 )
 
