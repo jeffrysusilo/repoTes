@@ -1,27 +1,32 @@
 package controllers
 
 import (
-    "golang-api/config"
-    "golang-api/models"
+    "encoding/json"
     "net/http"
 
-    "github.com/gin-gonic/gin"
+    "github.com/yourusername/go-ticket/config"
+    "github.com/google/uuid"
 )
 
-func CreateTerminal(c *gin.Context) {
-    var input struct {
-        Name string `json:"name"`
+func CreateTerminal(w http.ResponseWriter, r *http.Request) {
+    type TerminalRequest struct {
+        Name     string `json:"name"`
+        Location string `json:"location"`
     }
-    if err := c.ShouldBindJSON(&input); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+    var req TerminalRequest
+    json.NewDecoder(r.Body).Decode(&req)
+
+    id := uuid.New()
+    _, err := config.DB.Exec(`INSERT INTO terminals(terminal_id, name, location, created_at) VALUES($1,$2,$3,NOW())`,
+        id, req.Name, req.Location)
+
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    terminal := models.Terminal{Name: input.Name}
-    if err := config.DB.Create(&terminal).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{"message": "terminal created", "terminal": terminal})
+    json.NewEncoder(w).Encode(map[string]string{
+        "terminal_id": id.String(),
+    })
 }

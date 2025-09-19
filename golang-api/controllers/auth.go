@@ -1,45 +1,37 @@
 package controllers
 
 import (
-    "golang-api/config"
-    "golang-api/models"
+    "encoding/json"
     "net/http"
     "time"
 
-    "github.com/gin-gonic/gin"
     "github.com/golang-jwt/jwt/v5"
-    "golang.org/x/crypto/bcrypt"
-    "os"
+    "github.com/yourusername/go-ticket/config"
 )
 
-func Login(c *gin.Context) {
-    var input struct {
-        Username string `json:"username"`
-        Password string `json:"password"`
-    }
-    if err := c.ShouldBindJSON(&input); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+var JwtKey = []byte("secret_key")
 
-    var user models.User
-    if err := config.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
-        return
+func Login(w http.ResponseWriter, r *http.Request) {
+    type LoginRequest struct {
+        Email string `json:"email"`
     }
+    var req LoginRequest
+    json.NewDecoder(r.Body).Decode(&req)
 
-    if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong password"})
+    var userID string
+    err := config.DB.QueryRow("SELECT user_id FROM users WHERE email=$1", req.Email).Scan(&userID)
+    if err != nil {
+        http.Error(w, "User not found", http.StatusUnauthorized)
         return
     }
 
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-        "user_id": user.ID,
+        "user_id": userID,
         "exp":     time.Now().Add(time.Hour * 24).Unix(),
     })
 
-    tokenString, _ := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
-
-    c.JSON(http.StatusOK, gin.H{"token": tokenString})
+    tokenString, _ := token.SignedString(JwtKey)
+    json.NewEncoder(w).Encode(map[string]string{
+        "token": tokenString,
+    })
 }
- 

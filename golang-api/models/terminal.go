@@ -1,8 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type Terminal struct {
-    gorm.Model
-    Name string `gorm:"unique"`
+    TerminalID string `json:"terminal_id"`
+    Name       string `json:"name"`
+    Location   string `json:"location"`
 }
