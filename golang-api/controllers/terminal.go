@@ -20,7 +20,7 @@ func CreateTerminal(w http.ResponseWriter, r *http.Request) {
     json.NewDecoder(r.Body).Decode(&req)
 
     id := uuid.New()
-    _, err := config.DB.Exec(`INSERT INTO terminals(terminal_id, name, location, created_at) VALUES($1,$2,$3,NOW())`,
+    _, err := config.DB.Exec(`INSERT INTO terminals(terminal_id, name, location) VALUES($1,$2,$3)`,
         id, req.Name, req.Location)
 
     if err != nil {
