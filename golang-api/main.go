@@ -4,9 +4,10 @@ import (
     "net/http"
     "log"
 
-    "github.com/jeffrysusilo/repotes/golang-api/config"
-    "github.com/jeffrysusilo/repotes/golang-api/controllers"
-    "github.com/jeffrysusilo/repotes/golang-api/middleware"
+    "golang-api/config"
+    "golang-api/controllers"
+    "golang-api/middleware"
+
 )
 
 func main() {

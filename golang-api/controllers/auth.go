@@ -6,7 +6,8 @@ import (
     "time"
 
     "github.com/golang-jwt/jwt/v5"
-    "github.com/jeffrysusilo/repotes/golang-api/config"
+    "golang-api/config"
+
 )
 
 var JwtKey = []byte("secret_key")
